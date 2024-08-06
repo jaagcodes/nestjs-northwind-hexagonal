@@ -1,13 +1,25 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { CoreModule } from './core/core.module';
-import { InfrastructureModule } from './infrastructure/infrastructure.module';
-import { NorthwindDatabaseModule } from './infraestructure/northwind-database/northwind-database.module';
+import { CategoryRepositoryAdapter } from './infraestructure/adapters/category.repository.adapter';
+import { ProductRepositoryAdapter } from './infraestructure/adapters/product.repository.adapter';
+import { SupplierRepositoryAdapter } from './infraestructure/adapters/supplier.repository.adapter';
+import { InfraestructureModule } from './infraestructure/infraestructure.module';
+import { SharedModule } from './infraestructure/shared/shared.module';
 
 @Module({
-  imports: [CoreModule, InfrastructureModule, NorthwindDatabaseModule],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [
+    InfraestructureModule,
+    SharedModule,
+    CoreModule.register({
+      modules: [
+        InfraestructureModule
+      ],
+      adapters: {
+        productRepository: ProductRepositoryAdapter,
+        categoryRepository: CategoryRepositoryAdapter,
+        supplierRepository: SupplierRepositoryAdapter
+      }
+    }),
+  ]
 })
-export class AppModule {}
+export class AppModule { }
